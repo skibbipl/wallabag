@@ -4,19 +4,19 @@ include_once 'inc/poche/global.inc.php';
 include_once 'inc/poche/config.inc.php';
 
 if (php_sapi_name() === 'cli') {
-    $options = getopt('', array(
+    $options_cli = getopt('', array(
         'limit::',
         'user-id::',
         'token::',
     ));
 }
 else {
-    $options = $_GET;
+    $options_cli = $_GET;
 }
 
-$limit = ! empty($options['limit']) && ctype_digit($options['limit']) ? (int) $options['limit'] : 10;
-$user_id = ! empty($options['user-id']) && ctype_digit($options['user-id']) ? (int) $options['user-id'] : null;
-$token = ! empty($options['token']) && ctype_alnum($options['token']) ? $options['token'] : null;
+$limit = ! empty($options_cli['limit']) && ctype_digit($options_cli['limit']) ? (int) $options_cli['limit'] : 10;
+$user_id = ! empty($options_cli['user-id']) && ctype_digit($options_cli['user-id']) ? (int) $options_cli['user-id'] : null;
+$token = ! empty($options_cli['token']) && ctype_alnum($options_cli['token']) ? $options_cli['token'] : null;
 
 if (is_null($user_id)) {
     die('You must give a user id');
@@ -35,15 +35,10 @@ if ($token != $config['token']) {
 
 $items = $store->retrieveUnfetchedEntries($user_id, $limit);
 
+include_once 'inc/3rdparty/DummySingleItemFeed.php';
+include_once 'inc/3rdparty/fetch_content.php';
+
 foreach ($items as $item) {
-    $json = file_get_contents('/inc/3rdparty/makefulltextfeed.php?url='.urlencode($item['url']).'&max=5&links=preserve&exc=&format=json&submit=Create+Feed', FILE_USE_INCLUDE_PATH);
-    $content = json_decode($json, true);
-    $title = $content['rss']['channel']['item']['title'];
-    $body = $content['rss']['channel']['item']['description'];
-
-    var_dump($title);die;
-
-    if ($item_to_update = $store->fetch_content($item['id'], $user_id)) {
-        Model\update_item($item_to_update);
-    }
+    $content = fetchContent($item['url']);
+    $store->updateContentAndTitle($item['id'], $content, $user_id);
 }

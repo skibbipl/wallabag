@@ -34,12 +34,17 @@
                 <p>{% trans "The token is empty, you have to generate it to use feeds. Click <a href='?feed&amp;action=generate'>here to generate it</a>." %}</p>
             {% else %}
             <ul>
-                <li><a href="?feed&amp;type=home&amp;user_id={{ user_id }}&amp;token={{ token }}" target="_blank">{% trans "unread feed" %}</a></li>
+                <li><a href="?feed&amp;type=home&amp;user_id={{ user_id }}&amp;token={% trans "You can regenerate your token: <a href='?feed&amp;action=generate'>generate!</a>." %}" target="_blank">{% trans "unread feed" %}</a></li>
                 <li><a href="?feed&amp;type=fav&amp;user_id={{ user_id }}&amp;token={{ token }}" target="_blank">{% trans "favorites feed" %}</a></li>
                 <li><a href="?feed&amp;type=archive&amp;user_id={{ user_id }}&amp;token={{ token }}" target="_blank">{% trans "archive feed" %}</a></li>
             </ul>
-            <p>{% trans "You can regenerate your token: <a href='?feed&amp;action=generate'>generate!</a>." %}</p>
+            <p>{% trans "Your token is" %} <strong>{{ token }}</strong>. {% trans "<a href='?feed&amp;action=generate'>You can regenerate it.</a>" %}</p>
             {% endif %}
+
+            <h2>{% trans "Unfetched items" %}</h2>
+            <p>You can fetch content for imported items. <a href="cron.php?limit=10&amp;user-id={{ user_id }}&&amp;token={{token}}">Click here</a> to fetch content for 10 articles.</p>
+            <p>You can also create a cron task:</p>
+            <pre><code>0 */4 * * *  cd /path/to/poche && php cron.php --limit=10 --user-id={{user_id}} --token={{token}} >/dev/null 2>&1</code></pre>
             
             <h2>{% trans "Change your theme" %}</h2>
             <form method="post" action="?updatetheme" name="changethemeform">

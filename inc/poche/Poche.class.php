@@ -751,7 +751,7 @@ class Poche
             # the second <ol> is for read links
             $read = 1;
         }
-        $this->messages->add('s', _('import from instapaper completed. You have to execute the cron to fetch content.'));
+        $this->messages->add('s', _('import from instapaper completed. You have to execute the cron (see "Unfetched items" in Config) to fetch content.'));
         Tools::logm('import from instapaper completed');
         Tools::redirect();
     }
@@ -791,7 +791,7 @@ class Poche
             # the second <ul> is for read links
             $read = 1;
         }
-        $this->messages->add('s', _('import from pocket completed. You have to execute the cron to fetch content.'));
+        $this->messages->add('s', _('import from pocket completed. You have to execute the cron (see "Unfetched items" in Config) to fetch content.'));
         Tools::logm('import from pocket completed');
         Tools::redirect();
     }
@@ -844,7 +844,7 @@ class Poche
                 }
             }
         }
-        $this->messages->add('s', _('import from Readability completed. ' . $count . ' new links. You have to execute the cron to fetch content.'));
+        $this->messages->add('s', _('import from Readability completed. ' . $count . ' new links. You have to execute the cron (see "Unfetched items" in Config) to fetch content.'));
         Tools::logm('import from Readability completed');
         Tools::redirect();
     }

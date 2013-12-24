@@ -218,6 +218,20 @@ class Database {
         }
     }
 
+    public function retrieveUnfetchedEntries($user_id, $limit) {
+
+        $sql_limit = "LIMIT 0,".$limit;
+        if (STORAGE == 'postgres') {
+            $sql_limit = "LIMIT ".$limit." OFFSET 0";
+        }
+
+        $sql        = "SELECT * FROM entries WHERE content = '' AND user_id=? ORDER BY id " . $sql_limit;
+        $query      = $this->executeQuery($sql, array($user_id));
+        $entries    = $query->fetchAll();
+
+        return $entries;
+    }
+
     public function retrieveAll($user_id) {
         $sql        = "SELECT * FROM entries WHERE content <> '' AND user_id=? ORDER BY id";
         $query      = $this->executeQuery($sql, array($user_id));

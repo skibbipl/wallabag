@@ -110,7 +110,7 @@ class Poche
         $passTheme = TRUE;
         # Twig is an absolute requirement for Poche to function. Abort immediately if the Composer installer hasn't been run yet
         if (! self::$canRenderTemplates) {
-            $this->notInstalledMessage[] = 'Twig does not seem to be installed. Please initialize the Composer installation to automatically fetch dependencies. Have a look at <a href="http://doc.inthepoche.com/doku.php?id=users:begin:install">the documentation.</a>';
+            $this->notInstalledMessage[] = 'Twig does not seem to be installed. <a href="http://r.cdetc.fr/vendorzip" target="_blank">Please download vendor.zip</a> (and unzip it in your poche folder) or initialize the Composer installation to automatically fetch dependencies. Have a look at <a href="http://doc.inthepoche.com/doku.php?id=users:begin:install">the documentation.</a>';
             $passTheme = FALSE;
         }
 
@@ -333,10 +333,17 @@ class Poche
         switch ($action)
         {
             case 'add':
-                $json = file_get_contents(Tools::getPocheUrl() . '/inc/3rdparty/makefulltextfeed.php?url='.urlencode($url->getUrl()).'&max=5&links=preserve&exc=&format=json&submit=Create+Feed');
-                $content = json_decode($json, true);
-                $title = $content['rss']['channel']['item']['title'];
-                $body = $content['rss']['channel']['item']['description'];
+                // we don't fetch content while importing
+                if (!$import) {
+                    $json = file_get_contents(Tools::getPocheUrl() . '/inc/3rdparty/makefulltextfeed.php?url='.urlencode($url->getUrl()).'&max=5&links=preserve&exc=&format=json&submit=Create+Feed');
+                    $content = json_decode($json, true);
+                    $title = $content['rss']['channel']['item']['title'];
+                    $body = $content['rss']['channel']['item']['description'];
+                }
+                else {
+                    $title = '';
+                    $body = '';
+                }
 
                 if ($this->store->add($url->getUrl(), $title, $body, $this->user->getId())) {
                     Tools::logm('add link ' . $url->getUrl());
@@ -744,7 +751,7 @@ class Poche
             # the second <ol> is for read links
             $read = 1;
         }
-        $this->messages->add('s', _('import from instapaper completed'));
+        $this->messages->add('s', _('import from instapaper completed. You have to execute the cron to fetch content.'));
         Tools::logm('import from instapaper completed');
         Tools::redirect();
     }
@@ -784,7 +791,7 @@ class Poche
             # the second <ul> is for read links
             $read = 1;
         }
-        $this->messages->add('s', _('import from pocket completed'));
+        $this->messages->add('s', _('import from pocket completed. You have to execute the cron to fetch content.'));
         Tools::logm('import from pocket completed');
         Tools::redirect();
     }
@@ -837,7 +844,7 @@ class Poche
                 }
             }
         }
-        $this->messages->add('s', _('import from Readability completed. ' . $count . ' new links.'));
+        $this->messages->add('s', _('import from Readability completed. ' . $count . ' new links. You have to execute the cron to fetch content.'));
         Tools::logm('import from Readability completed');
         Tools::redirect();
     }

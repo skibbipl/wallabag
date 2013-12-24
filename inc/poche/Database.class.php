@@ -219,7 +219,7 @@ class Database {
     }
 
     public function retrieveAll($user_id) {
-        $sql        = "SELECT * FROM entries WHERE user_id=? ORDER BY id";
+        $sql        = "SELECT * FROM entries WHERE content <> '' AND user_id=? ORDER BY id";
         $query      = $this->executeQuery($sql, array($user_id));
         $entries    = $query->fetchAll();
 
@@ -228,7 +228,7 @@ class Database {
 
     public function retrieveOneById($id, $user_id) {
         $entry  = NULL;
-        $sql    = "SELECT * FROM entries WHERE id=? AND user_id=?";
+        $sql    = "SELECT * FROM entries WHERE content <> '' AND id=? AND user_id=?";
         $params = array(intval($id), $user_id);
         $query  = $this->executeQuery($sql, $params);
         $entry  = $query->fetchAll();
@@ -259,15 +259,15 @@ class Database {
         switch ($view)
         {
             case 'archive':
-                $sql    = "SELECT * FROM entries WHERE user_id=? AND is_read=? " . $order;
+                $sql    = "SELECT * FROM entries WHERE content <> '' AND user_id=? AND is_read=? " . $order;
                 $params = array($user_id, 1);
                 break;
             case 'fav' :
-                $sql    = "SELECT * FROM entries WHERE user_id=? AND is_fav=? " . $order;
+                $sql    = "SELECT * FROM entries WHERE content <> '' AND user_id=? AND is_fav=? " . $order;
                 $params = array($user_id, 1);
                 break;
             default:
-                $sql    = "SELECT * FROM entries WHERE user_id=? AND is_read=? " . $order;
+                $sql    = "SELECT * FROM entries WHERE content <> '' AND user_id=? AND is_read=? " . $order;
                 $params = array($user_id, 0);
                 break;
         }
@@ -339,7 +339,7 @@ class Database {
         $sql = 
             "SELECT * FROM entries
             LEFT JOIN tags_entries ON tags_entries.entry_id=entries.id
-            WHERE tags_entries.tag_id = ?";
+            WHERE entries.content <> '' AND tags_entries.tag_id = ?";
         $query = $this->executeQuery($sql, array($tag_id));
         $entries = $query->fetchAll();
 

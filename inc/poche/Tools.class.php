@@ -191,7 +191,7 @@ class Tools
 
     public static function logm($message)
     {
-        if (DEBUG_POCHE) {
+        if (DEBUG_POCHE && php_sapi_name() != 'cli') {
             $t = strval(date('Y/m/d_H:i:s')) . ' - ' . $_SERVER["REMOTE_ADDR"] . ' - ' . strval($message) . "\n";
             file_put_contents(CACHE . '/log.txt', $t, FILE_APPEND);
             error_log('DEBUG POCHE : ' . $message);
